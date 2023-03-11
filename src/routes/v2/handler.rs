@@ -7,15 +7,16 @@ use crate::{
 use super::{
     command::{get_command_output, RESULT_PATH, SCRIPT_PREFIX},
     model::{IdResponse, RecYoutubeRequest},
+    super::model::AppState,
 };
 
 use anyhow::anyhow;
 use axum::{
     body::Bytes,
-    extract::{ContentLengthLimit, Extension, Form, Multipart, Path},
+    extract::{ContentLengthLimit, Extension, Form, Multipart, Path, State, FromRef},
     response::Json,
 };
-use entity::{results, sea_orm::DatabaseConnection, users};
+use entity::{results, users};
 use std::fs;
 use tokio::process::Command;
 use tracing::{debug, info_span, Instrument};
@@ -28,7 +29,7 @@ pub async fn rec_upload(
             1024 * 1024 * 1024 /* 250mb */
         },
     >,
-    Extension(conn): Extension<DatabaseConnection>,
+    State(conn): State<AppState>,
     Extension(user): Extension<users::Model>,
 ) -> Result<Json<IdResponse>> {
     let MultipartContent {

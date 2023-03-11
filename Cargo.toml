@@ -15,23 +15,23 @@ members = [".", "migration", "entity"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = { version = "0.5.4", features = ["multipart"] }
+axum = { version = "0.6.10", features = ["multipart"] }
 clap = { version = "3", features = ["derive", "env"] }
 tokio = { version = "1", features = ["full"] }
 tower = { version = "0.4", features = ["util"] }
-tower-http = { version = "0.2", features = [
+tower-http = { version = "0.4", features = [
     "cors",
     "trace",
     "compression-br",
     "auth",
 ] }
 bytes = "1"
-uuid = { version = "0.8", features = ["serde", "v4"] }
+uuid = { version = "1", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }
 anyhow = "1.0"
 thiserror = "1.0"
 tracing = "0.1"
-tracing-subscriber = "0.2"
+tracing-subscriber = "0.3"
 chrono = "0.4"
 jsonwebtoken = "8"
 entity = { path = "entity" }

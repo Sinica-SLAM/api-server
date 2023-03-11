@@ -1,5 +1,5 @@
 use crate::routes::{v1, v2};
-use axum::{Extension, Router};
+use axum::{Router};
 use entity::sea_orm::DatabaseConnection;
 use tower::ServiceBuilder;
 use tower_http::{
@@ -9,10 +9,12 @@ use tower_http::{
 };
 use tracing::Level;
 
+
+
 pub fn create_route(conn: &DatabaseConnection, auth: &bool) -> Router {
     Router::new()
         .nest("/api", v1::create_route())
-        .nest("/api/v2", v2::create_route(auth))
+        .nest("/api/v2", v2::create_route(auth, conn))
         .layer(
             ServiceBuilder::new()
                 .layer(
@@ -23,6 +25,5 @@ pub fn create_route(conn: &DatabaseConnection, auth: &bool) -> Router {
                 )
                 .layer(CompressionLayer::new())
                 .layer(CorsLayer::new().allow_methods(Any).allow_origin(Any))
-                .layer(Extension(conn.clone())),
         )
 }

@@ -28,6 +28,7 @@ pub struct Claims {
 #[derive(Clone, Copy, Debug)]
 pub struct TokenAuth {
     pub auth: bool,
+    pub conn: DatabaseConnection
 }
 
 impl<B> AsyncAuthorizeRequest<B> for TokenAuth
@@ -39,11 +40,7 @@ where
     type Future = BoxFuture<'static, Result<Request<B>, Response<Self::ResponseBody>>>;
 
     fn authorize(&mut self, mut request: Request<B>) -> Self::Future {
-        let conn = request
-            .extensions()
-            .get::<DatabaseConnection>()
-            .expect("conn not set");
-        let conn = conn.clone();
+        let conn = self.conn.clone();
         let auth = self.auth.clone();
 
         Box::pin(async move {
