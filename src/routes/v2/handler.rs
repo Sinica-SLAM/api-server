@@ -7,30 +7,25 @@ use crate::{
 use super::{
     command::{get_command_output, RESULT_PATH, SCRIPT_PREFIX},
     model::{IdResponse, RecYoutubeRequest},
-    super::model::AppState,
 };
 
 use anyhow::anyhow;
 use axum::{
     body::Bytes,
-    extract::{ContentLengthLimit, Extension, Form, Multipart, Path, State, FromRef},
+    extract::{Extension, Form, Multipart, Path, State},
     response::Json,
 };
 use entity::{results, users};
+use sea_orm::DatabaseConnection;
 use std::fs;
 use tokio::process::Command;
 use tracing::{debug, info_span, Instrument};
 use uuid::Uuid;
 
 pub async fn rec_upload(
-    ContentLengthLimit(mut multipart): ContentLengthLimit<
-        Multipart,
-        {
-            1024 * 1024 * 1024 /* 250mb */
-        },
-    >,
-    State(conn): State<AppState>,
+    State(conn): State<DatabaseConnection>,
     Extension(user): Extension<users::Model>,
+    mut multipart:  Multipart,
 ) -> Result<Json<IdResponse>> {
     let MultipartContent {
         asr_kind,
@@ -67,14 +62,9 @@ pub async fn rec_upload(
 }
 
 pub async fn align_upload(
-    ContentLengthLimit(mut multipart): ContentLengthLimit<
-        Multipart,
-        {
-            1024 * 1024 * 1024 /* 250mb */
-        },
-    >,
-    Extension(conn): Extension<DatabaseConnection>,
+    State(conn): State<DatabaseConnection>,
     Extension(user): Extension<users::Model>,
+    mut multipart: Multipart,
 ) -> Result<Json<IdResponse>> {
     let MultipartContent {
         asr_kind,
@@ -108,9 +98,9 @@ pub async fn align_upload(
 }
 
 pub async fn rec_youtube(
-    form: Form<RecYoutubeRequest>,
-    Extension(conn): Extension<DatabaseConnection>,
+    State(conn): State<DatabaseConnection>,
     Extension(user): Extension<users::Model>,
+    form: Form<RecYoutubeRequest>,
 ) -> Result<Json<IdResponse>> {
     let request: RecYoutubeRequest = form.0;
 
@@ -140,9 +130,9 @@ pub async fn rec_youtube(
 }
 
 pub async fn translation(
-    body: Bytes,
-    Extension(conn): Extension<DatabaseConnection>,
+    State(conn): State<DatabaseConnection>,
     Extension(user): Extension<users::Model>,
+    body: Bytes,
 ) -> Result<Json<IdResponse>> {
     let id = Uuid::new_v4().to_string();
     let id_clone = id.clone();
@@ -193,8 +183,8 @@ pub async fn translation(
 }
 
 pub async fn result(
+    State(conn): State<DatabaseConnection>,
     Path(id): Path<String>,
-    Extension(conn): Extension<DatabaseConnection>,
 ) -> Result<Vec<u8>> {
     let result = find_result_by_id(&conn, id)
         .await

@@ -2,7 +2,7 @@ use super::super::upload::{parse_multipart, save_file, MultipartContent};
 use super::command::{get_command_output, SCRIPT_PREFIX};
 use super::model::RecYoutubeRequest;
 use crate::error::{HttpError, Result};
-use axum::extract::{ContentLengthLimit, Form, Multipart};
+use axum::extract::{Form, Multipart};
 use std::fs::{self, read, remove_dir_all, remove_file};
 use std::path::Path;
 use std::process::Command;
@@ -10,12 +10,7 @@ use tracing::debug;
 use uuid::Uuid;
 
 pub async fn rec_upload(
-    ContentLengthLimit(mut multipart): ContentLengthLimit<
-        Multipart,
-        {
-            1024 * 1024 * 1024 /* 250mb */
-        },
-    >,
+    mut multipart:  Multipart,  
 ) -> Result<Vec<u8>> {
     let MultipartContent {
         asr_kind,
@@ -53,12 +48,7 @@ pub async fn rec_upload(
 }
 
 pub async fn align_upload(
-    ContentLengthLimit(mut multipart): ContentLengthLimit<
-        Multipart,
-        {
-            1024 * 1024 * 1024 /* 250mb */
-        },
-    >,
+    mut multipart: Multipart,
 ) -> Result<Vec<u8>> {
     let MultipartContent {
         asr_kind,
@@ -95,12 +85,7 @@ pub async fn align_upload(
 }
 
 pub async fn app_upload(
-    ContentLengthLimit(mut multipart): ContentLengthLimit<
-        Multipart,
-        {
-            1024 * 1024 * 1024 /* 250mb */
-        },
-    >,
+    mut multipart: Multipart,
 ) -> Result<Vec<u8>> {
     let MultipartContent {
         extension, file, ..

@@ -9,7 +9,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use chrono::{Duration, Utc};
-use entity::sea_orm::DatabaseConnection;
+use sea_orm::DatabaseConnection;
 use futures::future::BoxFuture;
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
@@ -25,7 +25,7 @@ pub struct Claims {
     pub exp: u64,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct TokenAuth {
     pub auth: bool,
     pub conn: DatabaseConnection

@@ -1,6 +1,6 @@
 use api_server::{config::Config, routes::create_route};
 use clap::Parser;
-use entity::sea_orm::{Database, DatabaseConnection};
+use sea_orm::{Database, DatabaseConnection};
 use migration::{Migrator, MigratorTrait};
 
 use std::net::SocketAddr;

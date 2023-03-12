@@ -1,7 +1,8 @@
 use anyhow::{anyhow};
-use entity::{results, sea_orm::DatabaseConnection};
+use entity::results;
 use std::{fs, path::Path, str};
 
+use sea_orm::DatabaseConnection;
 use tokio::process::Command;
 use tracing::{debug, info_span, Instrument};
 

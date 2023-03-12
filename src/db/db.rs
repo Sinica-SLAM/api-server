@@ -1,6 +1,6 @@
 use chrono::Utc;
 use entity::{
-    results, sea_orm,
+    results,
     users::{self, Entity as User},
 };
 use sea_orm::{prelude::*, DbErr, NotSet, Set};

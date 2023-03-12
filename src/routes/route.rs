@@ -1,6 +1,6 @@
 use crate::routes::{v1, v2};
 use axum::{Router};
-use entity::sea_orm::DatabaseConnection;
+use sea_orm::DatabaseConnection;
 use tower::ServiceBuilder;
 use tower_http::{
     compression::CompressionLayer,

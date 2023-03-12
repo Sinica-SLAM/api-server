@@ -1,13 +1,7 @@
-use entity::users::*;
-use sea_schema::migration::{sea_query::*, *};
+use sea_orm_migration::prelude::*;
 
+#[derive(DeriveMigrationName)]
 pub struct Migration;
-
-impl MigrationName for Migration {
-    fn name(&self) -> &str {
-        "m20220101_000001_create_users_table"
-    }
-}
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
@@ -15,21 +9,21 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Entity)
+                    .table(Users::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Column::Id)
+                        ColumnDef::new(Users::Id)
                             .integer()
                             .not_null()
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Column::Username).string().not_null())
-                    .col(ColumnDef::new(Column::Remain).integer().not_null())
-                    .col(ColumnDef::new(Column::MaxQuery).integer().not_null())
+                    .col(ColumnDef::new(Users::Username).string().not_null())
+                    .col(ColumnDef::new(Users::Remain).integer().not_null())
+                    .col(ColumnDef::new(Users::MaxQuery).integer().not_null())
                     .col(
-                        ColumnDef::new(Column::ResetAt)
-                            .timestamp()
+                        ColumnDef::new(Users::ResetAt)
+                            .date_time()
                             .not_null()
                             .extra("DEFAULT CURRENT_TIMESTAMP".to_string()),
                     )
@@ -40,7 +34,17 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Entity).to_owned())
+            .drop_table(Table::drop().table(Users::Table).to_owned())
             .await
     }
+}
+
+#[derive(Iden)]
+enum Users {
+    Table,
+    Id,
+    Username,
+    Remain,
+    MaxQuery,
+    ResetAt,
 }
