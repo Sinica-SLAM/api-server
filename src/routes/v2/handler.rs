@@ -25,7 +25,7 @@ use uuid::Uuid;
 pub async fn rec_upload(
     State(conn): State<DatabaseConnection>,
     Extension(user): Extension<users::Model>,
-    mut multipart:  Multipart,
+    mut multipart: Multipart,
 ) -> Result<Json<IdResponse>> {
     let MultipartContent {
         asr_kind,
@@ -39,9 +39,7 @@ pub async fn rec_upload(
         .map_err(|e| HttpError::MultipartError(e.to_string()))?;
 
     let id = Uuid::new_v4().to_string();
-    let result = create_result(&conn, id.clone(), user.id)
-        .await
-        .map_err(|e| HttpError::Other(anyhow!(e.to_string())))?;
+    let result = create_result(&conn, id.clone(), user.id).await?;
 
     let file_path = save_file(&format!("{}.{}", id, extension), &file)
         .map_err(|e| HttpError::Other(anyhow!(e.to_string())))?;
@@ -76,9 +74,7 @@ pub async fn align_upload(
         .map_err(|e| HttpError::MultipartError(e.to_string()))?;
 
     let id = Uuid::new_v4().to_string();
-    let result = create_result(&conn, id.clone(), user.id)
-        .await
-        .map_err(|e| HttpError::Other(anyhow!(e.to_string())))?;
+    let result = create_result(&conn, id.clone(), user.id).await?;
 
     let file_path = save_file(&format!("{}.{}", id, extension), &file)?;
 
@@ -105,9 +101,7 @@ pub async fn rec_youtube(
     let request: RecYoutubeRequest = form.0;
 
     let id = Uuid::new_v4().to_string();
-    let result = create_result(&conn, id.clone(), user.id)
-        .await
-        .map_err(|e| HttpError::Other(anyhow!(e.to_string())))?;
+    let result = create_result(&conn, id.clone(), user.id).await?;
 
     let sub_command = format!(
         "{}/run_rec_youtube.sh {} {} {} {} {}",
@@ -136,9 +130,7 @@ pub async fn translation(
 ) -> Result<Json<IdResponse>> {
     let id = Uuid::new_v4().to_string();
     let id_clone = id.clone();
-    let result_model = create_result(&conn, id.clone(), user.id)
-        .await
-        .map_err(|e| HttpError::Other(anyhow!(e.to_string())))?;
+    let result_model = create_result(&conn, id.clone(), user.id).await?;
 
     tokio::spawn(
         async move {
@@ -186,9 +178,7 @@ pub async fn result(
     State(conn): State<DatabaseConnection>,
     Path(id): Path<String>,
 ) -> Result<Vec<u8>> {
-    let result = find_result_by_id(&conn, id)
-        .await
-        .map_err(|e| HttpError::Other(anyhow!(e.to_string())))?;
+    let result = find_result_by_id(&conn, id).await?;
     match result {
         None => Err(HttpError::NotFound("Result not found".to_string())),
         Some(result) => match result.status {

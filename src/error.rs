@@ -4,6 +4,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
+use sea_orm::error::DbErr;
 use serde::Serialize;
 use std::io;
 use thiserror::Error;
@@ -41,9 +42,14 @@ pub enum HttpError {
     #[error("Error parsing `multipart/form-data` request.\n{0}")]
     MultipartError(String),
 
+    // v1 api remove file error
     #[allow(dead_code)]
-    #[error(transparent)]
+    #[error("Job Failed")]
     IOError(#[from] io::Error),
+
+    #[allow(dead_code)]
+    #[error("An error occurred with the database")]
+    DbError(#[from] DbErr),
 
     #[allow(dead_code)]
     #[error(transparent)]
@@ -54,13 +60,20 @@ impl IntoResponse for HttpError {
     fn into_response(self) -> Response {
         let (status, err_msg) = match self {
             HttpError::NotFound(_) => (StatusCode::NOT_FOUND, self.to_string()),
+
             HttpError::Conflict => (StatusCode::CONFLICT, self.to_string()),
-            HttpError::InvalidParams(_) => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
-            HttpError::MultipartError(_) => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
-            HttpError::InvalidFileFormat => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
-            HttpError::IOError(_) => (StatusCode::NOT_FOUND, self.to_string()),
-            HttpError::Other(_) => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
-            HttpError::ExpectationFailed => (StatusCode::EXPECTATION_FAILED, self.to_string()),
+
+            HttpError::InvalidParams(_)
+            | HttpError::MultipartError(_)
+            | HttpError::InvalidFileFormat => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
+
+            HttpError::Other(_) | HttpError::DbError(_) => {
+                (StatusCode::INTERNAL_SERVER_ERROR, self.to_string())
+            }
+
+            HttpError::ExpectationFailed | HttpError::IOError(_) => {
+                (StatusCode::EXPECTATION_FAILED, self.to_string())
+            }
         };
         let body = Json(ErrorInfo { message: err_msg });
         (status, body).into_response()
