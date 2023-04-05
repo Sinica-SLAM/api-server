@@ -1,6 +1,6 @@
 use api_server::db::create_user;
 use clap::Parser;
-use entity::sea_orm::{Database, DatabaseConnection};
+use sea_orm::{Database, DatabaseConnection};
 #[derive(Parser, Debug)]
 pub struct Args {
     #[clap(short, long)]

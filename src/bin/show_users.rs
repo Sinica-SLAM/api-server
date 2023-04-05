@@ -1,7 +1,7 @@
 use entity::{
-    sea_orm::{Database, DatabaseConnection, EntityTrait},
     users::Entity as User,
 };
+use sea_orm::{Database, DatabaseConnection, EntityTrait};
 
 #[tokio::main]
 async fn main() {
