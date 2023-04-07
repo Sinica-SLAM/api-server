@@ -1,3 +1,5 @@
+use std::io;
+
 use anyhow;
 use axum::{
     http::StatusCode,
@@ -6,7 +8,6 @@ use axum::{
 };
 use sea_orm::error::DbErr;
 use serde::Serialize;
-use std::io;
 use thiserror::Error;
 
 pub type Result<T, E = HttpError> = core::result::Result<T, E>;

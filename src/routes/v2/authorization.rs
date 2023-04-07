@@ -1,4 +1,5 @@
-use crate::db;
+use std::fmt::Debug;
+
 use anyhow;
 use axum::{
     body::BoxBody,
@@ -9,13 +10,14 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use chrono::{Duration, Utc};
-use sea_orm::DatabaseConnection;
 use futures::future::BoxFuture;
 use jsonwebtoken::{decode, DecodingKey, Validation};
+use sea_orm::DatabaseConnection;
 use serde::{Deserialize, Serialize};
-use std::fmt::Debug;
 use tower_http::auth::AsyncAuthorizeRequest;
 use tracing::{instrument, trace};
+
+use crate::db;
 
 pub const JWT_SECRET: &str = "s_Ec_retg95k20ls";
 
@@ -28,7 +30,7 @@ pub struct Claims {
 #[derive(Clone, Debug)]
 pub struct TokenAuth {
     pub auth: bool,
-    pub conn: DatabaseConnection
+    pub conn: DatabaseConnection,
 }
 
 impl<B> AsyncAuthorizeRequest<B> for TokenAuth

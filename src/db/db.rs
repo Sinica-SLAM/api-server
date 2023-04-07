@@ -6,9 +6,7 @@ use entity::{
 use sea_orm::{prelude::*, DbErr, NotSet, Set};
 
 pub async fn get_first_user(conn: &DatabaseConnection) -> Result<Option<users::Model>, DbErr> {
-    User::find()
-        .one(conn)
-        .await
+    User::find().one(conn).await
 }
 
 pub async fn create_user(

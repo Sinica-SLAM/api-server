@@ -1,5 +1,6 @@
-use anyhow::Result;
 use std::{process::Command, str};
+
+use anyhow::Result;
 use tracing::debug;
 
 pub const SCRIPT_PREFIX: &str = "source ~/miniconda3/etc/profile.d/conda.sh;conda activate pkasr;bash /mnt/md0/nfs_share/PKASR/sinica_asr/api";

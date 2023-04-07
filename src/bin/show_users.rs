@@ -1,6 +1,4 @@
-use entity::{
-    users::Entity as User,
-};
+use entity::users::Entity as User;
 use sea_orm::{Database, DatabaseConnection, EntityTrait};
 
 #[tokio::main]

@@ -1,15 +1,14 @@
-use crate::routes::{v1, v2};
-use axum::{Router};
+use axum::Router;
 use sea_orm::DatabaseConnection;
 use tower::ServiceBuilder;
 use tower_http::{
     compression::CompressionLayer,
-    cors::{ CorsLayer, Any},
+    cors::{Any, CorsLayer},
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
 use tracing::Level;
 
-
+use crate::routes::{v1, v2};
 
 pub fn create_route(conn: &DatabaseConnection, auth: &bool) -> Router {
     Router::new()
@@ -24,6 +23,6 @@ pub fn create_route(conn: &DatabaseConnection, auth: &bool) -> Router {
                         .on_response(DefaultOnResponse::new().level(Level::INFO)),
                 )
                 .layer(CompressionLayer::new())
-                .layer(CorsLayer::new().allow_methods(Any).allow_origin(Any))
+                .layer(CorsLayer::new().allow_methods(Any).allow_origin(Any)),
         )
 }

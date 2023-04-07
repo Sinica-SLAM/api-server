@@ -1,5 +1,5 @@
-use sea_orm_migration::prelude::*;
 use sea_orm::{EnumIter, Iterable};
+use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -12,10 +12,22 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Results::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Results::Id).string().not_null().primary_key())
+                    .col(
+                        ColumnDef::new(Results::Id)
+                            .string()
+                            .not_null()
+                            .primary_key(),
+                    )
                     .col(ColumnDef::new(Results::OwnerId).integer().not_null())
                     .col(ColumnDef::new(Results::FilePath).string())
-                    .col(ColumnDef::new(Results::Status).enumeration(Status::Table, [Status::Running, Status::Fail, Status::Complete]).not_null())
+                    .col(
+                        ColumnDef::new(Results::Status)
+                            .enumeration(
+                                Status::Table,
+                                [Status::Running, Status::Fail, Status::Complete],
+                            )
+                            .not_null(),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("FK_result_owner")
@@ -27,8 +39,6 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await
-
-
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

@@ -1,13 +1,4 @@
-use crate::{
-    db::{create_result, find_result_by_id, set_result_file_path, set_result_status},
-    error::{HttpError, Result},
-    routes::upload::{parse_multipart, save_file, MultipartContent},
-};
-
-use super::{
-    command::{get_command_output, RESULT_PATH, SCRIPT_PREFIX},
-    model::{IdResponse, RecYoutubeRequest},
-};
+use std::fs;
 
 use anyhow::anyhow;
 use axum::{
@@ -17,10 +8,21 @@ use axum::{
 };
 use entity::{results, users};
 use sea_orm::DatabaseConnection;
-use std::fs;
 use tokio::process::Command;
 use tracing::{debug, info_span, Instrument};
 use uuid::Uuid;
+
+use crate::{
+    db::{create_result, find_result_by_id, set_result_file_path, set_result_status},
+    error::{HttpError, Result},
+    routes::{
+        upload::{parse_multipart, save_file, MultipartContent},
+        v2::{
+            command::{get_command_output, RESULT_PATH, SCRIPT_PREFIX},
+            model::{IdResponse, RecYoutubeRequest},
+        },
+    },
+};
 
 pub async fn rec_upload(
     State(conn): State<DatabaseConnection>,
