@@ -19,6 +19,7 @@ pub async fn rec_upload(mut multipart: Multipart) -> Result<Vec<u8>> {
         output_type,
         lmwt,
         min_word_gap,
+        n_jobs
     } = parse_multipart(&mut multipart)
         .await
         .map_err(|e| HttpError::MultipartError(e.to_string()))?;
@@ -28,8 +29,8 @@ pub async fn rec_upload(mut multipart: Multipart) -> Result<Vec<u8>> {
     let file_path = save_file(&format!("{}.{}", id, extension), &file)?;
 
     let sub_command = format!(
-        "{}/run_rec_upload.sh {} {} {} {} {} {}",
-        SCRIPT_PREFIX, id, asr_kind, output_type, file_path, lmwt, min_word_gap
+        "{}/run_rec_upload.sh {} {} {} {} {} {} {}",
+        SCRIPT_PREFIX, id, asr_kind, output_type, file_path, n_jobs, lmwt, min_word_gap
     );
 
     debug!("Run command: {}", sub_command);

@@ -28,8 +28,8 @@ pub enum HttpError {
     Conflict,
 
     #[allow(dead_code)]
-    #[error("Job Failed")]
-    ExpectationFailed,
+    #[error("Job Failed: {0}")]
+    ExpectationFailed(String),
 
     #[allow(dead_code)]
     #[error("Invalid params: {0:?}")]
@@ -72,7 +72,7 @@ impl IntoResponse for HttpError {
                 (StatusCode::INTERNAL_SERVER_ERROR, self.to_string())
             }
 
-            HttpError::ExpectationFailed | HttpError::IOError(_) => {
+            HttpError::ExpectationFailed(_) | HttpError::IOError(_) => {
                 (StatusCode::EXPECTATION_FAILED, self.to_string())
             }
         };

@@ -43,6 +43,7 @@ pub struct MultipartContent {
     pub output_type: OutputType,
     pub lmwt: i64,
     pub min_word_gap: f64,
+    pub n_jobs: i64,
 }
 
 impl Default for MultipartContent {
@@ -54,6 +55,7 @@ impl Default for MultipartContent {
             output_type: OutputType::Srt,
             lmwt: 10,
             min_word_gap: 0.3,
+            n_jobs: 1,
         }
     }
 }
@@ -89,6 +91,13 @@ pub async fn parse_multipart(multipart: &mut Multipart) -> Result<MultipartConte
                     .await?
                     .parse()
                     .map_err(|_| anyhow!("Invalid min_word_gap"))?
+            }
+            Some("n_jobs")=> {
+                content.n_jobs = field
+                    .text()
+                    .await?
+                    .parse()
+                    .map_err(|_| anyhow!("Invalid n_jobs"))?
             }
             unknown => {
                 return Err(anyhow!(

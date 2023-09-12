@@ -36,6 +36,7 @@ pub async fn rec_upload(
         output_type,
         lmwt,
         min_word_gap,
+        n_jobs,
     } = parse_multipart(&mut multipart)
         .await
         .map_err(|e| HttpError::MultipartError(e.to_string()))?;
@@ -47,8 +48,8 @@ pub async fn rec_upload(
         .map_err(|e| HttpError::Other(anyhow!(e.to_string())))?;
 
     let sub_command = format!(
-        "{}/run_rec_upload.sh {} {} {} {} {} {}",
-        SCRIPT_PREFIX, id, asr_kind, output_type, file_path, lmwt, min_word_gap
+        "{}/run_rec_upload.sh {} {} {} {} {} {} {}",
+        SCRIPT_PREFIX, id, asr_kind, output_type, file_path, n_jobs, lmwt, min_word_gap
     );
 
     debug!("Run command: {}", sub_command);
@@ -106,13 +107,14 @@ pub async fn rec_youtube(
     let result = create_result(&conn, id.clone(), user.id).await?;
 
     let sub_command = format!(
-        "{}/run_rec_youtube.sh {} {} {} {} {}",
+        "{}/run_rec_youtube.sh {} {} {} {} {} {}",
         SCRIPT_PREFIX,
         id,
         request.asr_kind.unwrap_or("sa_me_2.0".to_string()),
         request.output_type.unwrap_or("srt".to_string()),
         request.vid,
-        request.lmwt.unwrap_or("10".to_string())
+        request.lmwt.unwrap_or("10".to_string()),
+        request.n_jobs.unwrap_or("1".to_string()) // none docker version don't have this option
     );
 
     debug!("Run command: {}", sub_command);
@@ -190,7 +192,7 @@ pub async fn result(
                 let file = fs::read(path).map_err(|e| HttpError::Other(anyhow!(e.to_string())));
                 file
             }
-            results::Status::Fail => Err(HttpError::ExpectationFailed),
+            results::Status::Fail => Err(HttpError::ExpectationFailed(result.file_path.unwrap())),
         },
     }
 }

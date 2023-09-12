@@ -11,4 +11,5 @@ pub struct RecYoutubeRequest {
     pub output_type: Option<String>,
     pub vid: String,
     pub lmwt: Option<String>,
+    pub n_jobs: Option<String> // none docker version don't have this option
 }
